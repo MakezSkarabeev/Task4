@@ -53,18 +53,26 @@ struct ContentView: View {
 struct ScaleEffectStyle: ButtonStyle {
 
     private var duration = 0.22
+    @State private var isTapped: Bool = false
 
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        let animateIsPerforming: Bool = isTapped || configuration.isPressed
+
         configuration.label
-            .background(
-                Circle()
-                    .foregroundColor(.gray)
-                    .opacity(configuration.isPressed ? 1 : 0)
-                    .animation(.linear(duration: duration), value: configuration.isPressed)
-                    .frame(width: 100, height: 100)
+            .foregroundColor(.black)
+            .background(Circle()
+                .foregroundColor(.gray.opacity(animateIsPerforming ? 1 : .zero))
+                .frame(width: 100, height: 100)
             )
-            .scaleEffect(configuration.isPressed ? 0.86 : 1)
-            .animation(.linear(duration: duration), value: configuration.isPressed)
+            .scaleEffect(animateIsPerforming ? 0.86 : 1)
+            .animation(.easeInOut(duration: duration), value: animateIsPerforming)
+            .onTapGesture {
+                isTapped = true
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                    isTapped = false
+                }
+            }
     }
 }
 
