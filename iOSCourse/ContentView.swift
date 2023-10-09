@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    private var duration = 0.22
+    private var duration = 0.23
     @State private var isAnimated = false
 
     var body: some View {
@@ -50,27 +50,26 @@ struct ContentView: View {
     }
 }
 
-struct ScaleEffectStyle: ButtonStyle {
-
+struct ScaleEffectStyle: PrimitiveButtonStyle {
     private var duration = 0.22
-    @State private var isTapped: Bool = false
+    @State private var animationIsPerforming: Bool = false
 
     func makeBody(configuration: Self.Configuration) -> some View {
-        let animateIsPerforming: Bool = isTapped || configuration.isPressed
-
         configuration.label
             .foregroundColor(.black)
-            .background(Circle()
-                .foregroundColor(.gray.opacity(animateIsPerforming ? 1 : .zero))
+            .background(
+                Circle()
+                .foregroundColor(.gray.opacity(animationIsPerforming ? 1 : .zero))
                 .frame(width: 100, height: 100)
             )
-            .scaleEffect(animateIsPerforming ? 0.86 : 1)
-            .animation(.easeInOut(duration: duration), value: animateIsPerforming)
+            .scaleEffect(animationIsPerforming ? 0.86 : 1)
+            .animation(.linear(duration: duration), value: animationIsPerforming)
             .onTapGesture {
-                isTapped = true
+                configuration.trigger()
+                animationIsPerforming = true
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                    isTapped = false
+                    animationIsPerforming = false
                 }
             }
     }
