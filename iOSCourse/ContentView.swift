@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    private var duration = 0.23
+    private var duration = 0.25
     @State private var isAnimated = false
 
     var body: some View {
@@ -50,7 +50,7 @@ struct ContentView: View {
     }
 }
 
-struct ScaleEffectStyle: PrimitiveButtonStyle {
+struct ScaleEffectStyle: ButtonStyle {
     private var duration = 0.22
     @State private var animationIsPerforming: Bool = false
 
@@ -62,16 +62,15 @@ struct ScaleEffectStyle: PrimitiveButtonStyle {
                 .foregroundColor(.gray.opacity(animationIsPerforming ? 1 : .zero))
                 .frame(width: 100, height: 100)
             )
-            .scaleEffect(animationIsPerforming ? 0.86 : 1)
-            .animation(.linear(duration: duration), value: animationIsPerforming)
-            .onTapGesture {
-                configuration.trigger()
+            .onChange(of: configuration.isPressed) { _ in
                 animationIsPerforming = true
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
                     animationIsPerforming = false
                 }
             }
+            .scaleEffect(animationIsPerforming ? 0.86 : 1)
+            .animation(.linear(duration: duration), value: animationIsPerforming)
     }
 }
 
@@ -80,3 +79,4 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
